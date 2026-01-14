@@ -64,3 +64,7 @@ Find returns an Option type:
 when declaring a struct, you can add `#[derive(Debug)]` above it to enable debug printing.
 
 Enums can have data and even functions associated with each variant.
+
+## Chapter 3: First game with rust
+
+The main loop is able to use the `?` operator to propagate errors up the call stack, as long as the main function returns a Result type.
