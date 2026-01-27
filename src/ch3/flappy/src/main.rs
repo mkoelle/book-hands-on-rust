@@ -183,7 +183,10 @@ impl GameState for State {
 }
 
 fn main() -> BError {
-    let context = BTermBuilder::simple80x50().with_title("Flappy").build()?;
+    let context = BTermBuilder::simple80x50()
+        .with_tile_dimensions(16, 16)
+        .with_title("Flappy")
+        .build()?;
 
     main_loop(context, State::new())
 }

@@ -183,7 +183,11 @@ impl GameState for State {
 }
 
 fn main() -> BError {
-    let context = BTermBuilder::simple80x50().with_title("Flappy").build()?;
-
+    let context = BTermBuilder::simple80x50()
+        // .with_font("../resources/flappy32.png", 32, 32)
+        // .with_fancy_console(SCREEN_WIDTH, SCREEN_HEIGHT, "../resources/flappy32.png")
+        .with_tile_dimensions(16, 16)
+        .with_title("Flappy")
+        .build()?;
     main_loop(context, State::new())
 }
