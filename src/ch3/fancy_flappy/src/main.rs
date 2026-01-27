@@ -1,6 +1,6 @@
 use bracket_lib::prelude::*;
 
-const FRAME_DURATION: f32 = 75.0;
+const FRAME_DURATION: f32 = 45.0;
 const GRAVITY: f32 = 0.2;
 const FLAP_STRENGTH: f32 = -2.0;
 const SCREEN_TOP: i32 = 0;
@@ -11,7 +11,7 @@ struct State {
     player: Player,
     frame_time: f32,
     mode: GameMode,
-    obstacle: Obstacle,
+    obstacles: Vec<Obstacle>,
     score: i32,
 }
 
@@ -102,7 +102,7 @@ impl State {
             player: Player::new(5, 25),
             frame_time: 0.0,
             mode: GameMode::Menu,
-            obstacle: Obstacle::new(SCREEN_WIDTH, 0),
+            obstacles: vec![Obstacle::new(SCREEN_WIDTH, 0)],
             score: 0,
         }
     }
@@ -136,15 +136,30 @@ impl State {
             self.player.flap()
         }
 
-        if self.player.x > self.obstacle.x {
+        if self
+            .obstacles
+            .iter()
+            .any(|obstacle| obstacle.x < self.player.x)
+        {
             self.score += 1;
-            self.obstacle = Obstacle::new(self.player.x + SCREEN_WIDTH, self.score);
+            self.obstacles
+                .retain(|obstacle| obstacle.x >= self.player.x);
+            self.obstacles
+                .push(Obstacle::new(self.player.x + SCREEN_WIDTH, self.score));
         }
 
-        self.obstacle.render(ctx, self.player.x);
+        self.obstacles
+            .iter()
+            .for_each(|obstacle| obstacle.render(ctx, self.player.x));
+
         self.player.render(ctx);
 
-        if self.player.y > SCREEN_HEIGHT || self.obstacle.hit_obstacle(&self.player) {
+        if self.player.y > SCREEN_HEIGHT
+            || self
+                .obstacles
+                .iter()
+                .any(|obstacle| obstacle.hit_obstacle(&self.player))
+        {
             self.mode = GameMode::End;
         }
     }
@@ -168,7 +183,7 @@ impl State {
         self.frame_time = 0.0;
         self.mode = GameMode::Playing;
         self.score = 0;
-        self.obstacle = Obstacle::new(SCREEN_WIDTH, 0);
+        self.obstacles = vec![Obstacle::new(SCREEN_WIDTH, 0)];
     }
 }
 
