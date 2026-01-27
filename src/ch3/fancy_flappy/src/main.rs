@@ -25,6 +25,7 @@ struct Obstacle {
     x: i32,
     gap_y: i32,
     size: i32,
+    next: i32,
 }
 
 enum GameMode {
@@ -66,10 +67,13 @@ impl Player {
 impl Obstacle {
     fn new(x: i32, score: i32) -> Self {
         let mut random = RandomNumberGenerator::new();
+        let max_distance = i32::max(11, 50 - score * 2);
+
         Obstacle {
             x,
             gap_y: random.range(10, SCREEN_HEIGHT - 10),
-            size: i32::max(2, 20 - score),
+            size: i32::max(2, 20 - score * 2),
+            next: x + random.range(10, max_distance),
         }
     }
 
@@ -144,8 +148,17 @@ impl State {
             self.score += 1;
             self.obstacles
                 .retain(|obstacle| obstacle.x >= self.player.x);
-            self.obstacles
-                .push(Obstacle::new(self.player.x + SCREEN_WIDTH, self.score));
+        }
+
+        if self
+            .obstacles
+            .iter()
+            .any(|obstacle| obstacle.x == self.player.x + SCREEN_WIDTH - 5)
+        {
+            self.obstacles.push(Obstacle::new(
+                self.obstacles.last().unwrap().next,
+                self.score,
+            ));
         }
 
         self.obstacles
