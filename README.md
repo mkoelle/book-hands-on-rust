@@ -1,5 +1,7 @@
 # Hands on Rust Workshop
 
+- [Hands on Rust source code](https://github.com/thebracket/HandsOnRust)
+
 ## Chapter 1: Getting Started with Rust
 
 ### Part 1: Rust and your development environment
@@ -64,3 +66,9 @@ Find returns an Option type:
 when declaring a struct, you can add `#[derive(Debug)]` above it to enable debug printing.
 
 Enums can have data and even functions associated with each variant.
+
+Rust uses traits to define shared behavior. this is different from inheritance by allowing types to implement shared functionality without a strict class hierarchy.
+
+## Chapter 3: First game with rust
+
+The main loop is able to use the `?` operator to propagate errors up the call stack, as long as the main function returns a Result type.

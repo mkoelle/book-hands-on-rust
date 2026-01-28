@@ -1,5 +1,12 @@
 {
   "cSpell.words": [
     "rustup"
+  ],
+  // Source - https://stackoverflow.com/a
+// Posted by Marc Chêne
+// Retrieved 2026-01-27, License - CC BY-SA 4.0
+
+  "rust-analyzer.linkedProjects": [
+    "src/ch3/fancy_flappy/Cargo.toml",
   ]
 }
