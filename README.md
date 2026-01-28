@@ -72,3 +72,9 @@ Rust uses traits to define shared behavior. this is different from inheritance b
 ## Chapter 3: First game with rust
 
 The main loop is able to use the `?` operator to propagate errors up the call stack, as long as the main function returns a Result type.
+
+when using vectors, `map` is evaluated lazily, so if you want to execute it immediately, you need to call `collect()` at the end, or use `for_each` to iterate over the results.
+
+## Chapter 4: Design a dungeon crawler
+
+Must read Appendix A2 for this chapter.
