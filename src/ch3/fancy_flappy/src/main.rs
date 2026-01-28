@@ -43,7 +43,7 @@ impl Player {
         }
     }
     fn render(&mut self, ctx: &mut BTerm) {
-        ctx.set(0, self.y, YELLOW, BLACK, to_cp437('@'));
+        ctx.set(0, self.y, YELLOW, NAVY, to_cp437('@'));
     }
     fn moving(&mut self) {
         // Advance player distance
@@ -78,16 +78,36 @@ impl Obstacle {
     }
 
     fn render(&self, ctx: &mut BTerm, player_x: i32) {
+        ctx.set_active_console(1);
+
         let screen_x = self.x - player_x;
         let half_size = self.size / 2;
         // Draw top part of obstacle
         for y in 0..(self.gap_y - half_size) {
-            ctx.set(screen_x, y, RED, BLACK, to_cp437('#'));
+            ctx.set_fancy(
+                PointF::new(screen_x as f32, y as f32),
+                1,
+                Degrees::new(0.0),
+                PointF::new(1.0, 1.0),
+                WHITE,
+                NAVY,
+                10,
+            );
         }
         // Draw bottom part of obstacle
         for y in (self.gap_y + half_size)..SCREEN_HEIGHT {
-            ctx.set(screen_x, y, RED, BLACK, to_cp437('#'));
+            ctx.set_fancy(
+                PointF::new(screen_x as f32, y as f32),
+                1,
+                Degrees::new(0.0),
+                PointF::new(1.0, 1.0),
+                WHITE,
+                NAVY,
+                10,
+            );
         }
+
+        ctx.set_active_console(0);
     }
 
     fn hit_obstacle(&self, player: &Player) -> bool {
@@ -161,6 +181,10 @@ impl State {
             ));
         }
 
+        ctx.set_active_console(1);
+        ctx.cls();
+        ctx.set_active_console(0);
+
         self.obstacles
             .iter()
             .for_each(|obstacle| obstacle.render(ctx, self.player.x));
@@ -177,6 +201,9 @@ impl State {
         }
     }
     fn dead(&mut self, ctx: &mut BTerm) {
+        ctx.set_active_console(1);
+        ctx.cls();
+        ctx.set_active_console(0);
         ctx.cls();
         ctx.print_centered(5, "You Died!");
         ctx.print_centered(6, format!("Final Score: {}", self.score));
@@ -212,9 +239,9 @@ impl GameState for State {
 
 fn main() -> BError {
     let context = BTermBuilder::simple80x50()
-        // .with_font("../resources/flappy32.png", 32, 32)
-        // .with_fancy_console(SCREEN_WIDTH, SCREEN_HEIGHT, "../resources/flappy32.png")
-        .with_tile_dimensions(16, 16)
+        .with_font("../resources/flappy32.png", 32, 32)
+        .with_fancy_console(SCREEN_WIDTH, SCREEN_HEIGHT, "../resources/flappy32.png")
+        .with_tile_dimensions(12, 12)
         .with_title("Flappy")
         .build()?;
     main_loop(context, State::new())

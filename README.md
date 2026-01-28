@@ -1,5 +1,7 @@
 # Hands on Rust Workshop
 
+- [Hands on Rust source code](https://github.com/thebracket/HandsOnRust)
+
 ## Chapter 1: Getting Started with Rust
 
 ### Part 1: Rust and your development environment
