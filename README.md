@@ -78,3 +78,11 @@ when using vectors, `map` is evaluated lazily, so if you want to execute it imme
 ## Chapter 4: Design a dungeon crawler
 
 Must read Appendix A2 for this chapter.
+
+## Chapter 5: Build a dungeon crawler
+
+How does the prelude work?
+
+How does derive work?
+
+What does impl x for y do?

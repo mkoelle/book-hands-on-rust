@@ -8,5 +8,6 @@
 
   "rust-analyzer.linkedProjects": [
     "src/ch3/fancy_flappy/Cargo.toml",
+    "src/ch5/dungeondud/Cargo.toml"
   ]
 }
