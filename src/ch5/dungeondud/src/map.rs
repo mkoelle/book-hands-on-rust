@@ -33,26 +33,9 @@ impl Map {
             }
         }
     }
-    pub fn render2(&self, ctx: &mut BTerm) {
-        self.tiles.iter().enumerate().for_each(|(i, t)| {
-            let (x, y) = xy_idx(i);
-            match t {
-                TileType::Floor => {
-                    ctx.set(x, y, GREEN, BLACK, to_cp437('.'));
-                }
-                TileType::Wall => {
-                    ctx.set(x, y, WHITE, BLACK, to_cp437('#'));
-                }
-            }
-        });
-    }
 }
 
 pub fn map_idx(x: i32, y: i32) -> usize {
     ((y * SCREEN_WIDTH) + x) as usize
 }
-pub fn xy_idx(idx: usize) -> (i32, i32) {
-    let x = (idx as i32) % SCREEN_WIDTH;
-    let y = (idx as i32) / SCREEN_WIDTH;
-    (x, y)
-}
+

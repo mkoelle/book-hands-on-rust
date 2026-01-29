@@ -86,3 +86,154 @@ How does the prelude work?
 How does derive work?
 
 What does impl x for y do?
+
+### Working with loops and rendering
+
+#### `render` — Nested Loops (FASTEST ⭐)
+Uses nested `for` loops to iterate coordinates and calculate indices with `map_idx()`.
+- Cheapest operations: multiplication and addition
+- No closures, no branches
+- **Best for performance-critical rendering loops**
+
+```rust
+pub fn render(&self, ctx: &mut BTerm) {
+    for y in 0..SCREEN_HEIGHT {
+        for x in 0..SCREEN_WIDTH {
+            let idx = map_idx(x, y);
+            match self.tiles[idx] {
+                TileType::Floor => {
+                    ctx.set(x, y, GREEN, BLACK, to_cp437('.'));
+                }
+                TileType::Wall => {
+                    ctx.set(x, y, WHITE, BLACK, to_cp437('#'));
+                }
+            }
+        }
+    }
+}
+```
+
+#### `render2` — Iterator with Closure (SLOWEST)
+Iterates tiles directly and converts flat indices to coordinates with `xy_idx()`.
+- Uses `for_each` closure (adds indirection overhead)
+- More expensive operations: modulo (`%`) and division (`/`)
+- More idiomatic Rust, cleaner syntax
+- **Sacrifices ~15-20% performance for code style**
+
+```rust
+pub fn render2(&self, ctx: &mut BTerm) {
+    self.tiles.iter().enumerate().for_each(|(i, t)| {
+        let (x, y) = xy_idx(i);
+        match t {
+            TileType::Floor => {
+                ctx.set(x, y, LIGHT_GREEN, BLACK, to_cp437('.'));
+            }
+            TileType::Wall => {
+                ctx.set(x, y, WHITE, BLACK, to_cp437('#'));
+            }
+        }
+    });
+}
+pub fn xy_idx(idx: usize) -> (i32, i32) {
+    let x = (idx as i32) % SCREEN_WIDTH;
+    let y = (idx as i32) / SCREEN_WIDTH;
+    (x, y)
+}
+```
+
+#### `render2_refactored` — Iterator without Closure (MIDDLE)
+Same algorithm as `render2`, but replaces `for_each` with a standard `for` loop.
+- Removes closure overhead
+- Still uses expensive modulo/division operations
+- Better than original `render2`, but still slower than `render`
+
+```rust
+pub fn render2_refactored(&self, ctx: &mut BTerm) {
+    for (i, t) in self.tiles.iter().enumerate() {
+        let (x, y) = xy_idx(i);
+        match t {
+            TileType::Floor => {
+                ctx.set(x, y, LIGHT_GREEN, BLACK, to_cp437('.'));
+            }
+            TileType::Wall => {
+                ctx.set(x, y, WHITE, BLACK, to_cp437('#'));
+            }
+        }
+    }
+}
+pub fn xy_idx(idx: usize) -> (i32, i32) {
+    let x = (idx as i32) % SCREEN_WIDTH;
+    let y = (idx as i32) / SCREEN_WIDTH;
+    (x, y)
+}
+```
+
+#### `render3` — Manual Coordinate Tracking with Closure (SLOW)
+Manually tracks `x` and `y` coordinates, wrapping with a conditional check on every tile.
+- Uses `for_each` closure (indirection overhead)
+- Branch check on every iteration (predictable, but still a cost)
+- Attempts to avoid expensive division/modulo operations
+
+```rust
+pub fn render3(&self, ctx: &mut BTerm) {
+    let (mut x, mut y) = (0, 0);
+    self.tiles.iter().enumerate().for_each(|(i, t)| {
+        if x >= SCREEN_WIDTH {
+            y += 1;
+            x = 0;
+        }
+        match t {
+            TileType::Floor => {
+                ctx.set(x, y, LIGHT_GREEN, BLACK, to_cp437('.'));
+            }
+            TileType::Wall => {
+                ctx.set(x, y, WHITE, BLACK, to_cp437('#'));
+            }
+        }
+        x += 1;
+    });
+}
+```
+
+#### `render3_refactored` — Manual Coordinate Tracking without Closure (SECOND FASTEST)
+Same approach as `render3`, but replaces `for_each` with a standard `for` loop and uses proper `i32` types.
+- Removes closure overhead significantly
+- Branch check is predictable (modern CPUs handle well)
+- Much closer to `render` performance
+- Slightly more verbose than `render`
+
+```rust
+pub fn render3_refactored(&self, ctx: &mut BTerm) {
+    let (mut x, mut y) = (0i32, 0i32);
+    for t in self.tiles.iter() {
+        if x >= SCREEN_WIDTH {
+            y += 1;
+            x = 0;
+        }
+        match t {
+            TileType::Floor => {
+                ctx.set(x, y, LIGHT_GREEN, BLACK, to_cp437('.'));
+            }
+            TileType::Wall => {
+                ctx.set(x, y, WHITE, BLACK, to_cp437('#'));
+            }
+        }
+        x += 1;
+    }
+}
+```
+
+#### Performance Ranking (Best to Worst)
+1. **`render`** — Fastest (tight nested loops, cheap arithmetic, no branches)
+2. **`render3_refactored`** — Second (minimal overhead, predictable branch)
+3. **`render2_refactored`** — Third (no closure, but expensive modulo/division)
+4. **`render3`** — Fourth (closure overhead + branch)
+5. **`render2`** — Slowest (closure overhead + expensive operations)
+
+#### Key Takeaways
+- **For game development**: Use `render` — the performance difference matters when rendering every frame
+- **For readability vs performance trade-off**: Use `render3_refactored` — close to `render` performance with cleaner code
+- **For pure idiomatic Rust**: Use `render2_refactored` — good performance with iterator-based style
+- Avoid `for_each` closures in performance-critical loops; standard `for` loops are nearly always faster
+
+```
