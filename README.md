@@ -90,7 +90,9 @@ What does impl x for y do?
 ### Working with loops and rendering
 
 #### `render` — Nested Loops (FASTEST ⭐)
+
 Uses nested `for` loops to iterate coordinates and calculate indices with `map_idx()`.
+
 - Cheapest operations: multiplication and addition
 - No closures, no branches
 - **Best for performance-critical rendering loops**
@@ -111,10 +113,15 @@ pub fn render(&self, ctx: &mut BTerm) {
         }
     }
 }
+pub fn map_idx(x: i32, y: i32) -> usize {
+    ((y * SCREEN_WIDTH) + x) as usize
+}
 ```
 
 #### `render2` — Iterator with Closure (SLOWEST)
+
 Iterates tiles directly and converts flat indices to coordinates with `xy_idx()`.
+
 - Uses `for_each` closure (adds indirection overhead)
 - More expensive operations: modulo (`%`) and division (`/`)
 - More idiomatic Rust, cleaner syntax
@@ -142,7 +149,9 @@ pub fn xy_idx(idx: usize) -> (i32, i32) {
 ```
 
 #### `render2_refactored` — Iterator without Closure (MIDDLE)
+
 Same algorithm as `render2`, but replaces `for_each` with a standard `for` loop.
+
 - Removes closure overhead
 - Still uses expensive modulo/division operations
 - Better than original `render2`, but still slower than `render`
@@ -169,7 +178,9 @@ pub fn xy_idx(idx: usize) -> (i32, i32) {
 ```
 
 #### `render3` — Manual Coordinate Tracking with Closure (SLOW)
+
 Manually tracks `x` and `y` coordinates, wrapping with a conditional check on every tile.
+
 - Uses `for_each` closure (indirection overhead)
 - Branch check on every iteration (predictable, but still a cost)
 - Attempts to avoid expensive division/modulo operations
@@ -196,7 +207,9 @@ pub fn render3(&self, ctx: &mut BTerm) {
 ```
 
 #### `render3_refactored` — Manual Coordinate Tracking without Closure (SECOND FASTEST)
+
 Same approach as `render3`, but replaces `for_each` with a standard `for` loop and uses proper `i32` types.
+
 - Removes closure overhead significantly
 - Branch check is predictable (modern CPUs handle well)
 - Much closer to `render` performance
@@ -224,6 +237,7 @@ pub fn render3_refactored(&self, ctx: &mut BTerm) {
 ```
 
 #### Performance Ranking (Best to Worst)
+
 1. **`render`** — Fastest (tight nested loops, cheap arithmetic, no branches)
 2. **`render3_refactored`** — Second (minimal overhead, predictable branch)
 3. **`render2_refactored`** — Third (no closure, but expensive modulo/division)
@@ -231,9 +245,12 @@ pub fn render3_refactored(&self, ctx: &mut BTerm) {
 5. **`render2`** — Slowest (closure overhead + expensive operations)
 
 #### Key Takeaways
+
 - **For game development**: Use `render` — the performance difference matters when rendering every frame
 - **For readability vs performance trade-off**: Use `render3_refactored` — close to `render` performance with cleaner code
 - **For pure idiomatic Rust**: Use `render2_refactored` — good performance with iterator-based style
 - Avoid `for_each` closures in performance-critical loops; standard `for` loops are nearly always faster
+
+```
 
 ```
