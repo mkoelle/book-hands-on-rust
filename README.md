@@ -83,7 +83,11 @@ Must read Appendix A2 for this chapter.
 
 How does the prelude work?
 
+- `mod::prelude` is a convention to group together multiple imports, functions, types, and other items; so that they can be easily imported by other modules
+
 How does derive work?
+- automatically generates implementations for certain traits on structs or enums
+- it is possible to create a custom derive macro, but we haven't covered that yet
 
 What does impl x for y do?
 
