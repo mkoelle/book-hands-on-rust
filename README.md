@@ -90,6 +90,31 @@ How does derive work?
 - it is possible to create a custom derive macro, but we haven't covered that yet
 
 What does impl x for y do?
+- `impl` is used to define implementations on types. It allows you to add methods and associated functions to a type
+    - adding functions to a struct
+    ```rust
+    struct Example {
+        apple: i32
+    }
+    impl Example {
+        //...
+        fn increment(&mut self){
+            self.apple +=1
+        }
+    }
+    ```
+- `impl` is also used for implementing traits for types. This allows you to define how a type should behave according to a specific trait.
+    - add trait to example, traits take the place of inheritance with more flexibility
+    ```rust
+    trait Something {
+        fn do_something(&self)
+    }
+    impl Something for Example {
+        fn do_something(&self){
+            println!("Doing something! there are {apple} apples!")
+        }
+    }
+    ```
 
 ### Working with loops and rendering
 
