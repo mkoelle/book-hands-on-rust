@@ -116,6 +116,10 @@ What does impl x for y do?
     }
     ```
 
+- `iter_mut` is to specifically iterate and mutate a vector
+- when working with references to variables, and there is a need to modify the variable and not the reference
+    use `*` to dereference the parameter. `*something` allows that passthrough
+
 ### Working with loops and rendering
 
 #### `render` — Nested Loops (FASTEST ⭐)
